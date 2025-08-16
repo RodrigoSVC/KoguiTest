@@ -94,7 +94,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-N8N_WEBHOOK_URL = config('N8N_WEBHOOK_URL', default='https://drikydev.app.n8n.cloud/webhook/lead-received')
+N8N_WEBHOOK_URL = config('N8N_WEBHOOK_URL', default='http://challenge_n8n:5678/webhook/lead-received')
 N8N_USER = config('N8N_USER', default='admin')
 N8N_PASSWORD = config('N8N_PASSWORD', default='admin123')
 

@@ -37,7 +37,7 @@ def cadastrar_lead(request):
                     'email': lead.email,
                 }
                 
-                webhook_url = "http://challenge_n8n:5678/webhook/lead-received"
+                webhook_url = settings.N8N_WEBHOOK_URL
                 auth = (settings.N8N_USER, settings.N8N_PASSWORD)
                 headers = {
                     'Content-Type': 'application/json',
