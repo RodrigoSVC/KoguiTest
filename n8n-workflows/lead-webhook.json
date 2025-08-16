@@ -1,0 +1,128 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "httpMethod": "POST",
+        "path": "lead-received",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e47f29b8-7cd7-456e-877c-c3aa28745b50",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        720,
+        400
+      ],
+      "webhookId": "b8d65290-1df1-4779-ab68-691d73ddb8f0",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "9q3OtV3H3Uwe0ILs",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "{{ $json.nome }}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "{{ $json.email }}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "{{ $json.email }}",
+              "operation": "contains",
+              "value2": "@"
+            }
+          ]
+        }
+      },
+      "id": "4b20258a-c023-4adb-8e8e-2fc16d803f87",
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        940,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{      \"ok\": true,      \"message\": \"Lead recebido com sucesso\",      \"lead_id\": \"{{ $json.id }}\",      \"timestamp\": \"{{ $now }}\"    }",
+        "options": {}
+      },
+      "id": "e803e2e5-6160-44c2-93a9-fe2ffb96a45b",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{      \"ok\": false,      \"error\": \"Dados inválidos\",      \"message\": \"Nome e email são obrigatórios\",      \"timestamp\": \"{{ $now }}\"    }",
+        "options": {}
+      },
+      "id": "e4c38d61-9343-4b15-96c5-748590129528",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        560
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "8ce4851a-702c-4dd5-bce7-3bc3b095cd11",
+  "id": "1SLnnYAMBIdoL7u6",
+  "meta": {
+    "instanceId": "456a6eab9db0eacf74d937b45557bf4a9c9b35f7d0367d397cded5574a25aa90"
+  },
+  "tags": []
+}

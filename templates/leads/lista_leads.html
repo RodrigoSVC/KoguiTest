@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Leads{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">Lista de Leads</h1>
+                <p class="text-muted mb-0">Gerencie todos os leads cadastrados no sistema</p>
+            </div>
+            <a href="{% url 'leads:cadastrar_lead' %}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Novo Lead
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Busca -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" name="q" class="form-control" 
+                       placeholder="Buscar por nome, empresa ou email..." 
+                       value="{{ query|default:'' }}">
+                <button type="submit" class="btn btn-outline-primary">Buscar</button>
+                {% if query %}
+                    <a href="{% url 'leads:lista_leads' %}" class="btn btn-outline-secondary">Limpar</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de Leads -->
+<div class="card">
+    <div class="card-body p-0">
+        {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Empresa</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in page_obj %}
+                            <tr>
+                                <td>
+                                    <strong>{{ lead.nome }}</strong>
+                                </td>
+                                <td>{{ lead.empresa|default:"-" }}</td>
+                                <td>
+                                    <a href="mailto:{{ lead.email }}" class="text-decoration-none">
+                                        {{ lead.email }}
+                                    </a>
+                                </td>
+                                <td>{{ lead.telefone|default:"-" }}</td>
+                                <td>
+                                    {% if lead.status == 'novo' %}
+                                        <span class="badge bg-success">Novo</span>
+                                    {% elif lead.status == 'contatado' %}
+                                        <span class="badge bg-warning">Contatado</span>
+                                    {% elif lead.status == 'qualificado' %}
+                                        <span class="badge bg-info">Qualificado</span>
+                                    {% elif lead.status == 'convertido' %}
+                                        <span class="badge bg-primary">Convertido</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ lead.criado_em|date:"d/m/Y" }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{% url 'leads:visualizar_lead' lead.id %}" 
+                                           class="btn btn-outline-primary" title="Visualizar">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'leads:editar_lead' lead.id %}" 
+                                           class="btn btn-outline-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'leads:excluir_lead' lead.id %}" 
+                                           class="btn btn-outline-danger" title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginação -->
+            {% if page_obj.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Paginação">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                        <i class="fas fa-angle-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Nenhum lead encontrado</h5>
+                <p class="text-muted">
+                    {% if query %}
+                        Não foram encontrados leads para "{{ query }}".
+                    {% else %}
+                        Ainda não há leads cadastrados no sistema.
+                    {% endif %}
+                </p>
+                <a href="{% url 'leads:cadastrar_lead' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Cadastrar Primeiro Lead
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

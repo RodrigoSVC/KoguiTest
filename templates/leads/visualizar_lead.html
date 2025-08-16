@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Visualizar Lead - {{ lead.nome }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="card-title mb-0">
+                            <i class="fas fa-user me-2"></i>{{ lead.nome }}
+                        </h2>
+                        <p class="text-muted mb-0 mt-2">Detalhes do lead</p>
+                    </div>
+                    <div>
+                        {% if lead.status == 'novo' %}
+                            <span class="badge bg-success fs-6">Novo</span>
+                        {% elif lead.status == 'contatado' %}
+                            <span class="badge bg-warning fs-6">Contatado</span>
+                        {% elif lead.status == 'qualificado' %}
+                            <span class="badge bg-info fs-6">Qualificado</span>
+                        {% elif lead.status == 'convertido' %}
+                            <span class="badge bg-primary fs-6">Convertido</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-muted mb-3">Informações Pessoais</h5>
+                        <dl class="row">
+                            <dt class="col-sm-4">Nome:</dt>
+                            <dd class="col-sm-8">{{ lead.nome }}</dd>
+                            
+                            <dt class="col-sm-4">Email:</dt>
+                            <dd class="col-sm-8">
+                                <a href="mailto:{{ lead.email }}">{{ lead.email }}</a>
+                            </dd>
+                            
+                            <dt class="col-sm-4">Telefone:</dt>
+                            <dd class="col-sm-8">{{ lead.telefone|default:"Não informado" }}</dd>
+                        </dl>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5 class="text-muted mb-3">Informações Profissionais</h5>
+                        <dl class="row">
+                            <dt class="col-sm-4">Empresa:</dt>
+                            <dd class="col-sm-8">{{ lead.empresa|default:"Não informada" }}</dd>
+                            
+                            <dt class="col-sm-4">Cargo:</dt>
+                            <dd class="col-sm-8">{{ lead.cargo|default:"Não informado" }}</dd>
+                            
+                            <dt class="col-sm-4">Status:</dt>
+                            <dd class="col-sm-8">{{ lead.get_status_display }}</dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                {% if lead.observacoes %}
+                    <hr>
+                    <h5 class="text-muted mb-3">Observações</h5>
+                    <p class="mb-0">{{ lead.observacoes }}</p>
+                {% endif %}
+                
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-plus me-1"></i>
+                            Criado em: {{ lead.criado_em|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-edit me-1"></i>
+                            Atualizado em: {{ lead.atualizado_em|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2 mt-4">
+                    <a href="{% url 'leads:editar_lead' lead.id %}" class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>Editar Lead
+                    </a>
+                    <a href="{% url 'leads:lista_leads' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Voltar à Lista
+                    </a>
+                    <a href="{% url 'leads:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
