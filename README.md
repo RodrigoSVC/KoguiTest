@@ -6,7 +6,7 @@ Sistema simples para gerenciar leads com Django, PostgreSQL e N8N.
 
 ### 1. Iniciar
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
 ### 2. Acessar
